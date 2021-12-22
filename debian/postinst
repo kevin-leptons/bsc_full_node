@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+SERVICE_SAMPLE_CONF_FILE="/usr/share/bsc_full_node/sample_config"
+SERVICE_CONF_FILE="/etc/bsc_full_node/config"
+
+create_configuration_file() {
+    if [ -f "$SERVICE_CONF_FILE" ]; then
+        return 0
+    fi
+
+    local configuration_dir="$(dirname "$SERVICE_CONF_FILE")"
+
+    mkdir -vp "$configuration_dir"
+    cp "$SERVICE_SAMPLE_CONF_FILE" "$SERVICE_CONF_FILE"
+}
+
+main() {
+    create_configuration_file
+    echo "ok"
+}
+
+main

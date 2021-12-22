@@ -1,0 +1,8 @@
+Package: bsc-full-node
+Version: 0.1.0
+Section: base
+Priority: optional
+Architecture: amd64
+Maintainer: Kevin Leptons<kevin.leptons@protonmail.com>
+Description: Binance Smart Chain full node for get log records
+Depends: coreutils(>= 8)

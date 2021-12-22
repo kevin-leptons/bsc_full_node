@@ -1,0 +1,7 @@
+[Unit]
+Description=Binance Smart Chain full node, optimized for get logs
+Requires=network.target
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/bsc_full_node start

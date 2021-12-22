@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+
+set -e
+
+VERSION="0.1.0"
+BINARY_DIR="$(dirname $0)"
+GETH_BINARY="$BINARY_DIR/geth_linux"
+
+command_help() {
+    local EXE_NAME=$(basename $0)
+
+    echo "Description"
+    echo "    Binance Smart Chain full node, optimized for get logs."
+    echo "    Support only JSON RPC over HTTP."
+    echo
+    echo "Synopsis"
+    echo "    $EXE_NAME start.......... Start BSC full node"
+    echo "    $EXE_NAME log............ Watch log file"
+    echo "    $EXE_NAME version........ Display version"
+    echo "    $EXE_NAME bsc_version.... Display BSC node binary version"
+    echo
+    echo "Files"
+    echo "    /etc/bsc_full_node/config................... Configuration file"
+    echo "    /usr/share/bsc_full_node/sample_config...... Sample configuration"
+    echo
+    echo "References"
+    echo "    https://github.com/kevin-leptons/bsc_full_node"
+}
+
+print_date() {
+    TZ="UTC" date +"%Y-%m-%d %H:%M:%S"
+}
+
+throw_error() {
+    echo "ERROR $(print_date) - $1"
+    exit 1
+}
+
+log_info() {
+    echo "INFO  $(print_date) - $1"
+}
+
+load_config_file() {
+    read_config_file
+    make_additional_config
+    validate_config
+}
+
+read_config_file() {
+    GETH_DATADIR="/data/bsc_full_node"
+    GETH_CACHE=131072
+    GETH_CONFIG_FILE="/usr/share/bsc_full_node/geth_config.toml"
+    GETH_HTTP_ADDR=127.0.0.1
+    GETH_HTTP_PORT=8545
+
+    local cwd_config_file="config"
+    local system_config_file="/etc/bsc_full_node/config"
+
+    if [ -f "$cwd_config_file" ]; then
+        source "$cwd_config_file"
+        log_info "use configuration file: $cwd_config_file"
+        return 0
+    fi
+
+    if [ -f "$system_config_file" ]; then
+        source "$system_config_file"
+        log_info "use configuration file: $system_config_file"
+        return 0
+    fi
+
+    throw_error "no configuration file!"
+}
+
+make_additional_config() {
+    GETH_LOCK_FILE="$GETH_DATADIR/bsc_full_node.lock"
+}
+
+validate_config() {
+    if [ -z "$GETH_DATADIR" ]; then
+        throw_error "config.GETH_DATADIR: invalid"
+    fi
+
+    if [[ ! "$GETH_CACHE" =~ ^[0-9]+$ ]]; then
+        throw_error "config.GETH_CACHE: invalid"
+    fi
+
+    if [ -z "$GETH_CONFIG_FILE" ]; then
+        throw_error "config.GETH_CONFIG_FILE: invalid"
+    fi
+
+    if [ -z "$GETH_HTTP_ADDR" ]; then
+        throw_error "config.GETH_HTTP_ADDR: invalid"
+    fi
+
+    if [[ ! "$GETH_HTTP_PORT" =~ ^[0-9]+$ ]]; then
+        throw_error "config.GETH_HTTP_PORT: invalid"
+    fi
+
+    if [ -z "$GETH_LOCK_FILE" ]; then
+        throw_error "config.GETH_LOCK_FILE: invalid"
+    fi
+
+    if [ ! -d "$GETH_DATADIR" ]; then
+        throw_error "config.GETH_DATADIR: not a directory '$GETH_DATADIR'"
+    fi
+
+    if [ ! -f "$GETH_CONFIG_FILE" ]; then
+        throw_error "config.GETH_CONFIG_FILE: not a file '$GETH_CONFIG_FILE'"
+    fi
+}
+
+command_start_eth() {
+    load_config_file
+    log_info "start service..."
+    "$GETH_BINARY" --config "$GETH_CONFIG_FILE" \
+    --datadir "$GETH_DATADIR" \
+    --syncmode snap \
+    --gcmode full \
+    --diffsync \
+    --txlookuplimit 0 \
+    --cache "$GETH_CACHE" \
+    --http --http.addr "$GETH_HTTP_ADDR" --http.port "$GETH_HTTP_PORT" \
+    --http.api eth
+}
+
+command_log() {
+    load_config_file
+
+    local log_file="$GETH_DATADIR/bsc.log"
+
+    if [ ! -f "$log_file" ]; then
+        throw_error "no log file: '$log_file'"
+    fi
+
+    tail -f "$log_file"
+}
+
+command_version() {
+    echo $VERSION
+}
+
+command_bsc_version() {
+    $GETH_BINARY version
+}
+
+if [ "$#" -ne 1 ]; then
+    command_help
+    exit 1
+fi
+
+case $1 in
+    "start")
+        command_start_eth
+        ;;
+    "log")
+        command_log
+        ;;
+    "version")
+        command_version
+        ;;
+    "bsc_version")
+        command_bsc_version
+        ;;
+    *)
+        command_help
+        exit 1
+        ;;
+esac

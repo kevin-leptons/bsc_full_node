@@ -1,0 +1,29 @@
+# WARN: Dot not modify this file.
+# The configuration file is load by following priority:
+#   * ./config
+#   * /etc/bsc_full_node/config
+
+# Path to `geth` data directory.
+#
+# [Default] "/data/bsc_full_node"
+GETH_DATADIR="/data/bsc_full_node"
+
+# Memory cache in megabytes for `geth`.
+#
+# [Default] 131072
+GETH_CACHE=131072
+
+# Path to `geth` configuration file, know as `config.toml`.
+#
+# [Default] "/etc/bsc_full_node/geth_config.toml"
+GETH_CONFIG_FILE="/usr/share/bsc_full_node/geth_config.toml"
+
+# `geth` listen on this IP address to serve JSON RPC over HTTP.
+#
+# [Default] "127.0.0.1"
+GETH_HTTP_ADDR="127.0.0.1"
+
+# `geth` listen on this port to serve JSON RPC over HTTP.
+#
+# [Default] 8545
+GETH_HTTP_PORT=8545
