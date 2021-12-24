@@ -1,10 +1,11 @@
 # Documents
 
+* [Requirements](#requirements)
 * [Installation](#installation)
     * [Setup bsc_full_node](#setup-bscfullnode)
     * [Publish JSON RPC Endpoint](#publish-json-rpc-endpoint)
     * [Sample Nginx Configuration](#sample-nginx-configuration)
-* [Requirements](#requirements)
+* [Maintaince](#maintaince)
 * [Development](#development)
     * [Update BSC Binary](#update-bsc-binary)
     * [Testing](#testing)
@@ -181,6 +182,26 @@ server {
 	return 301 https://$host$request_uri;
 }
 ```
+
+# Maintaince
+
+```bash
+# Step 1. Stop service.
+sudo systemctl stop bsc-full-node
+
+# Step 2. Remove snapshot data.
+#
+# It takes hours and should be put to background.
+bsc-full-node prune-snapshot-data
+
+# Step 3. Start service.
+sudo systemctl start bsc-full-node
+
+# Step. Verify service is running.
+sudo bsc-full-node log
+```
+
+Source: https://docs.binance.org/smart-chain/developer/fullnode.html#node-maintainence.
 
 # Development
 

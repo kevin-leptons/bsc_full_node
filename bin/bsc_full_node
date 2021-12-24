@@ -16,6 +16,7 @@ command_help() {
     echo "Synopsis"
     echo "    $EXE_NAME start.......... Start BSC full node"
     echo "    $EXE_NAME log............ Watch log file"
+    echo "    $EXE_NAME prune.......... Remove snapshot data, make node faster"
     echo "    $EXE_NAME version........ Display version"
     echo "    $EXE_NAME bsc_version.... Display BSC node binary version"
     echo
@@ -135,6 +136,12 @@ command_log() {
     tail -f "$log_file"
 }
 
+command_prune() {
+    load_config_file
+    "$GETH_BINARY" snapshot prune-state \
+        --datadir "$GETH_DATADIR"
+}
+
 command_version() {
     echo $VERSION
 }
@@ -154,6 +161,9 @@ case $1 in
         ;;
     "log")
         command_log
+        ;;
+    "prune")
+        command_prune
         ;;
     "version")
         command_version
