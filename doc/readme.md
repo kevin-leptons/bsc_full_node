@@ -151,6 +151,8 @@ curl -v https://{DOMAIN_NAME}
 # PATH_TO_PASSOWRD_FILE: Path to file which is made from section
 # `Publish JSON RPC Endpoint`, Step 2.
 
+limit_req_zone global zone=rpc_node_01:16m rate=50r/s;
+
 # Serve HTTPS connection.
 server {
 	listen 443 ssl;
@@ -159,6 +161,7 @@ server {
 	ssl_certificate {PATH_TO_CERTIFICATE_FILE};
 	ssl_certificate_key {PATH_TO_KEY_FILE};
 
+    limit_req zone=rpc_node_01 burst=128 nodelay;
 	auth_basic "Basic Authenticatin is Required";
 	auth_basic_user_file {PATH_TO_PASSOWRD_FILE};
 
@@ -172,6 +175,8 @@ server {
 	listen 80;
 	listen [::]:80;
 	server_name {DOMAIN_NAME};
+
+    limit_req zone=rpc_node_01 burst=128 nodelay;
 
 	return 301 https://$host$request_uri;
 }
