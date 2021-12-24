@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="0.1.0"
+VERSION="0.2.0"
 BINARY_DIR="$(dirname $0)"
 GETH_BINARY="$BINARY_DIR/geth_linux"
 

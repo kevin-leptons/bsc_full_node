@@ -3,7 +3,7 @@
 set -e
 
 PACKAGE_NAME="bsc-full-node"
-PACKAGE_VERSION="0.1.0"
+PACKAGE_VERSION="0.2.0"
 BUILD_VERSION="0"
 TARGET_DIR="target"
 DEBIAN_DIR="$TARGET_DIR/debian"
